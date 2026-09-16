@@ -12,6 +12,7 @@
 #                     or https://download.pytorch.org/whl/cpu for a CPU torch build.
 #   PIXANO_EXTRAS     core extras to install (e.g. "transformers"); empty for none.
 #   INSTALL_SAM       "true" to bundle the SAM2 plugin (+ the git-only sam-2 library).
+#   INSTALL_CLIP      "true" to bundle the open_clip embedding plugin.
 #   INSTALL_EXAMPLE   "true" to bundle the framework-free numpy example plugin.
 #
 # Examples:
@@ -26,6 +27,7 @@ FROM python:${PYTHON_VERSION}-slim AS builder
 ARG TORCH_INDEX_URL=https://download.pytorch.org/whl/cu124
 ARG PIXANO_EXTRAS=transformers
 ARG INSTALL_SAM=true
+ARG INSTALL_CLIP=false
 ARG INSTALL_EXAMPLE=false
 
 RUN apt-get update \
@@ -63,6 +65,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     if [ "${INSTALL_SAM}" = "true" ]; then \
         uv pip install ./packages/pixano-inference-sam "sam-2 @ git+https://github.com/facebookresearch/sam2.git@${SAM2_REF}"; \
     fi; \
+    if [ "${INSTALL_CLIP}" = "true" ]; then uv pip install ./packages/pixano-inference-clip; fi; \
     if [ "${INSTALL_EXAMPLE}" = "true" ]; then uv pip install ./examples/numpy_detector; fi
 
 # --- Runtime ----------------------------------------------------------------------------
